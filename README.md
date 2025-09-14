@@ -24,7 +24,7 @@
 ## 🚀 Quickstart  
 
 ```bash
-git clone https://github.com/your-username/rag-knowledge-assistant.git
+git clone https://github.com/htree255/rag-knowledge-assistant.git
 cd rag-knowledge-assistant
 pip install -r requirements.txt
 ```
