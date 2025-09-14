@@ -1,0 +1,5 @@
+pandas
+llama-index-core
+llama-index-retrievers-bm25
+python-dotenv
+google-generativeai

@@ -1,0 +1,13 @@
+# Environment variables and sensitive data
+.env
+
+# Virtual environment
+.venv/
+venv/
+
+# IDE-specific files (VS Code)
+.vscode/
+
+# Python bytecode
+__pycache__/
+*.pyc
