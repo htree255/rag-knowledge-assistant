@@ -1,6 +1,6 @@
 # 🍃 Eatsy RAG Assistant  
 
-**A Retrieval-Augmented Generation (RAG) chatbot for customer support in a vegan/vegetarian food delivery business.**  
+**A Retrieval-Augmented Generation (RAG) knowledge assistant for customer support in a vegan/vegetarian food delivery business.**  
 
 ---
 
@@ -24,20 +24,20 @@
 ## 🚀 Quickstart  
 
 ```bash
-git clone https://github.com/your-username/eatsy-rag-assistant.git
-cd eatsy-rag-assistant
+git clone https://github.com/your-username/rag-knowledge-assistant.git
+cd rag-knowledge-assistant
 pip install -r requirements.txt
 ```
 
 Add `.env` with your API key:  
 ```
-GOOGLE_API_KEY=your_google_key_here
+GEMINI_API_KEY=your_google_key_here
 
 ```
 
 Run the pipeline:  
 ```bash
-python rag_pipeline.py
+python app.py
 ```
 
 Example:  
