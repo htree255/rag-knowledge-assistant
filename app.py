@@ -11,7 +11,24 @@ from dotenv import load_dotenv
 import pandas as pd
 from mock_data import data
 
+from llama_index.core import Document, StorageContext, VectorStoreIndex
+
+from llama_index.retrievers.bm25 import BM25Retriever
+from llama_index.embeddings.google_genai import GoogleGenAIEmbedding
+
+from google import genai
+
+# ==============================================================================
+# 2. Config and Setup
+# ==============================================================================
+
 load_dotenv()
+
+MODEL_NAME = os.getenv("MODEL_NAME", "gemini-2.5-flash")
+EMBED_MODEL_NAME = os.getenv("EMBED_MODEL_NAME", "gemini-embedding-001")
+TOP_K = int(os.getenv("TOP_K", 3))
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 # Convert to pandas for pre processing
 kb_df = pd.DataFrame(data)
@@ -20,35 +37,54 @@ kb_df = pd.DataFrame(data)
 # print(kb_df.columns)
 
 # ==============================================================================
-# 2. Document Preparation
+# 3. Document Preparation
 # ==============================================================================
 
 # We convert the loaded dataset items into LlamaIndex's Document objects.
 # This format is required for LlamaIndex to process the data.
 # The `text` field contains the core content (knowledge base text), and the
 # `metadata` field stores additional information, like the query category.
-from llama_index.core import Document
 
 docs = [Document(text = row["text"], metadata = {"category":row["category"],
                                                  "restaurant_id":row["restaurant_id"]}) 
         for _, row in kb_df.iterrows() ]
 
 # ==============================================================================
-# 3. Retriever Module (BM25)
+# 4. Retriever Initialization with two methods: BM25 and embeddings
 # ==============================================================================
 
 # -----------------
 # BM25 Retriever
 # -----------------
-from llama_index.retrievers.bm25 import BM25Retriever
 
-bm25_retriever = BM25Retriever.from_defaults(nodes=docs, similarity_top_k=3)
+bm25_retriever = BM25Retriever.from_defaults(nodes=docs, similarity_top_k=TOP_K)
+
+# -----------------
+# embedding Retriever
+# -----------------
+
+# Create the embedding model
+embed_client = GoogleGenAIEmbedding(
+    model_name=EMBED_MODEL_NAME,
+    api_key=GEMINI_API_KEY
+)
+
+# Create a vector store using the embeddings
+storage_context = StorageContext.from_defaults()
+vector_index = VectorStoreIndex.from_documents(docs, storage_context, embed_model=embed_client)
+
+# Then make a retriever out of the vector index
+embedding_retriever = vector_index.as_retriever(similarity_top_k=TOP_K)
+
+# Create a retriever dictionary
+retrievers = {
+    "bm25": bm25_retriever,
+    "embedding": embedding_retriever
+}
 
 # ==============================================================================
 # 4. LLM Initialization
 # ==============================================================================
-
-from google import genai
 
 client = genai.Client()
 
@@ -56,15 +92,17 @@ client = genai.Client()
 # 5. RAG Pipeline Function
 # ==============================================================================
 
-def rag_pipeline(query: str):
+def rag_pipeline(query: str, method: str):
     """
     Runs the RAG pipeline with BM25 retrieval method.
 
     Args:
         query (str): The question to be answered.
-        method (str): The retrieval method to use ('bm25').
+        method (str): The retrieval method to use ('bm25' or 'embedding').
     """
-    context_list = bm25_retriever.retrieve(query)
+    
+    retriever = retrievers[method]
+    context_list = retriever.retrieve(query)
     context = ""
 
     # The retrieved documents are formatted into a single string to be passed
@@ -88,7 +126,7 @@ def rag_pipeline(query: str):
     
     try:
         response = client.models.generate_content(
-        model="gemini-2.5-flash", contents=prompt
+        model=MODEL_NAME, contents=prompt
         )
         answer = response.candidates[0].content.parts[0].text
     except Exception as e:
@@ -110,6 +148,6 @@ if __name__ == "__main__":
     ]
     # Example usage:
     for q in queries:
-        result = rag_pipeline(q)
+        result = rag_pipeline(q, "embedding")
         print(f"\n[User] {result[0]}")
         print(f"[Eatsy Assistant] {result[1]}")
