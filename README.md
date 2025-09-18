@@ -1,6 +1,6 @@
 # 🍃 Eatsy RAG Knowledge Assistant  
 
-**A Retrieval-Augmented Generation (RAG) based knowledge assistant for customer support in a vegan/vegetarian food delivery business called Eatsy.**  
+**A Retrieval-Augmented Generation (RAG) knowledge assistant for customer support in a vegan/vegetarian food delivery business.**  
 
 ---
 
@@ -24,8 +24,8 @@
 ## 🚀 Quickstart  
 
 ```bash
-git clone https://github.com/your-username/eatsy-rag-assistant.git
-cd eatsy-rag-assistant
+git clone https://github.com/htree255/rag-knowledge-assistant.git
+cd rag-knowledge-assistant
 pip install -r requirements.txt
 ```
 
@@ -46,7 +46,7 @@ TOP_K=3
 
 Run the pipeline:  
 ```bash
-python rag_pipeline.py
+python app.py
 ```
 
 Example:  
