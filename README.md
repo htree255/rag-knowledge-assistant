@@ -1,31 +1,27 @@
----
+# 🍃 Eatsy RAG Knowledge Assistant  
 
-# 🍃 Eatsy RAG Knowledge Assistant
-
-**A Retrieval-Augmented Generation (RAG) knowledge assistant for customer support in a vegan/vegetarian food delivery business.**
+**A Retrieval-Augmented Generation (RAG) knowledge assistant for customer support in a vegan/vegetarian food delivery business.**  
 
 ---
 
-## 🔑 Highlights
-
-* **Knowledge Base**: Mock dataset with FAQs, refund policies, delivery info, and support transcripts.
-* **Retriever**: BM25 and Gemini embedding-based retrieval (switchable).
-* **LLM**: Google Gemini integration.
-* **Pipeline**: Unified `rag_pipeline()` function for query → retrieve → context → generate.
-* **Portfolio Value**: Demonstrates applied AI engineering (retrieval, LLM integration, RAG design).
-
----
-
-## ⚙️ Tech Stack
-
-* **Python** (pandas, dotenv)
-* **LlamaIndex** (BM25Retriever, VectorStoreIndex, GeminiEmbedding)
-* **LLMs** (Gemini for text generation + embeddings)
-* **Custom Knowledge Base**
+## 🔑 Highlights  
+- **Knowledge Base**: Mock dataset with FAQs, refund policies, delivery info, and support transcripts.  
+- **Retriever**: BM25 and Gemini embedding-based retrieval (switchable).  
+- **LLM**: Google Gemini integration.  
+- **Pipeline**: Unified `rag_pipeline()` function for query → retrieve → context → generate.  
+- **Portfolio Value**: Demonstrates applied AI engineering (retrieval, LLM integration, RAG design).  
 
 ---
 
-## 🚀 Quickstart
+## ⚙️ Tech Stack  
+- **Python** (pandas, dotenv)  
+- **LlamaIndex** (BM25Retriever, VectorStoreIndex, GeminiEmbedding)  
+- **LLMs** (Gemini for text generation + embeddings)  
+- **Custom Knowledge Base**  
+
+---
+
+## 🚀 Quickstart  
 
 ```bash
 git clone https://github.com/htree255/rag-knowledge-assistant.git
@@ -33,7 +29,7 @@ cd rag-knowledge-assistant
 pip install -r requirements.txt
 ```
 
-Add a `.env` file with your API key and defaults:
+Add a `.env` file with your API key and defaults:  
 
 ```ini
 GOOGLE_API_KEY=your_google_key_here
@@ -48,13 +44,13 @@ EMBED_MODEL_NAME=gemini-embedding-001
 TOP_K=3
 ```
 
-Run the pipeline:
+Run the pipeline:  
 
 ```bash
 python app.py
 ```
 
-**Example Run**:
+**Example Run**:  
 
 ```
 BM25-based retrieval
@@ -83,9 +79,9 @@ Embedding-based retrieval
 
 ---
 
-## 🔀 Switching Retrieval Methods
+## 🔀 Switching Retrieval Methods  
 
-The pipeline supports both **BM25** (keyword-based) and **embedding-based** retrieval using the Gemini embedding model.
+The pipeline supports both **BM25** (keyword-based) and **embedding-based** retrieval using the Gemini embedding model.  
 
 ```python
 # BM25 retriever
@@ -95,15 +91,15 @@ result = rag_pipeline("How can I get a discount?", method="bm25")
 result = rag_pipeline("How can I get a discount?", method="embedding")
 ```
 
-This makes it easy to compare **keyword search** vs **semantic search** in customer support scenarios.
+This makes it easy to compare **keyword search** vs **semantic search** in customer support scenarios.  
 
 ---
 
-## 📓 Observations / Learnings
+## 📓 Observations / Learnings  
 
-We compared **two approaches** for working with Gemini embeddings:
+We compared **two approaches** for working with Gemini embeddings:  
 
-### 🔹 Direct Google SDK (`genai.Client`)
+### 🔹 Direct Google SDK (`genai.Client`)  
 
 ```python
 from google import genai
@@ -116,20 +112,18 @@ res = client.models.embed_content(
 vector = res.embedding.values
 ```
 
-**✅ Pros**
+**✅ Pros**  
+- Direct access to Gemini API (no extra layer).  
+- Full control over embedding calls and storage.  
+- Great for testing and custom pipelines.  
 
-* Direct access to Gemini API (no extra layer).
-* Full control over embedding calls and storage.
-* Great for testing and custom pipelines.
-
-**⚠️ Cons**
-
-* You must manage document chunking, vector storage, and retrieval logic manually.
-* More boilerplate code for a complete RAG system.
+**⚠️ Cons**  
+- You must manage document chunking, vector storage, and retrieval logic manually.  
+- More boilerplate code for a complete RAG system.  
 
 ---
 
-### 🔹 LlamaIndex `GeminiEmbedding`
+### 🔹 LlamaIndex `GeminiEmbedding`  
 
 ```python
 from llama_index.embeddings.gemini import GeminiEmbedding
@@ -138,33 +132,30 @@ embed_model = GeminiEmbedding(model_name="gemini-embedding-001")
 vector = embed_model.get_text_embedding("What is the meaning of life?")
 ```
 
-**✅ Pros**
+**✅ Pros**  
+- Integrates seamlessly with LlamaIndex retrievers (`VectorStoreIndex`, `as_retriever`).  
+- Handles chunking, embedding, and retrieval automatically.  
+- Easy to switch between BM25, embeddings, or hybrid retrieval.  
+- Less boilerplate for building full RAG pipelines.  
 
-* Integrates seamlessly with LlamaIndex retrievers (`VectorStoreIndex`, `as_retriever`).
-* Handles chunking, embedding, and retrieval automatically.
-* Easy to switch between BM25, embeddings, or hybrid retrieval.
-* Less boilerplate for building full RAG pipelines.
-
-**⚠️ Cons**
-
-* Adds dependency on LlamaIndex.
-* Less direct control over low-level API calls.
+**⚠️ Cons**  
+- Adds dependency on LlamaIndex.  
+- Less direct control over low-level API calls.  
 
 ---
 
-### 💡 Takeaway
+### 💡 Takeaway  
 
-* Use **Google SDK directly** if you want **full control** and are building a pipeline from scratch.
-* Use **LlamaIndex GeminiEmbedding** if you want **faster development** and easy integration with BM25 + hybrid retrieval.
+- Use **Google SDK directly** if you want **full control** and are building a pipeline from scratch.  
+- Use **LlamaIndex GeminiEmbedding** if you want **faster development** and easy integration with BM25 + hybrid retrieval.  
 
 ---
 
-## 🔮 Roadmap
-
-* Add **hybrid retriever** (BM25 + embeddings together).
-* Add **LLM Guardrails** (to prevent hallucinations & off-brand responses).
-* Implement an **LLM Judge** for automated evaluation.
-* Add **evaluation metrics** (e.g., retrieval precision/recall, grounding score).
-* Build a **UI chatbot** with retrieval toggle.
+## 🔮 Roadmap  
+- Add **hybrid retriever** (BM25 + embeddings together).  
+- Add **LLM Guardrails** (to prevent hallucinations & off-brand responses).   
+- Implement an **LLM Judge** for automated evaluation.  
+- Add **evaluation metrics** (e.g., retrieval precision/recall, grounding score).  
+- Build a **UI chatbot** with retrieval toggle.  
 
 ---
